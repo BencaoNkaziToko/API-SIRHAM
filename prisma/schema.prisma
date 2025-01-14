@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+    id        String   @id @default(cuid())
+    name      String
+    email     String?  @unique
+    createdAt DateTime @default(now())
+}
+
+model Employee {
+    id               String   @id @default(cuid())
+    agentNumber      String   @unique
+    name             String
+    gender           String
+    dateOfBirth      DateTime
+    phone            String
+    categoryId       String
+    workDepartmentId String
+    dateOfAppointment DateTime
+    createdAt        DateTime @default(now())
+
+    category         Category       @relation(fields: [categoryId], references: [id])
+    workDepartment   WorkDepartment @relation(fields: [workDepartmentId], references: [id])
+    documents        Document[]
+    absences         Absence[]
+    vacationSchedules VacationSchedule[]
+}
+
+model Category {
+    id          String   @id @default(cuid())
+    name        String
+    description String?
+    netSalary   Decimal
+    grossSalary Decimal
+    createdAt   DateTime @default(now())
+
+    employees   Employee[]
+}
+
+model WorkDepartment {
+    id             String   @id @default(cuid())
+    name           String
+    description    String?
+    competencies   String?
+    organicStatute String?
+    createdAt      DateTime @default(now())
+
+    employees      Employee[]
+}
+
+model Document {
+    id          String   @id @default(cuid())
+    title       String
+    dateOfIssuance DateTime?
+    path        String
+    employeeId  String
+    createdAt   DateTime @default(now())
+    dismissal   Dismissal []
+    employee    Employee @relation(fields: [employeeId], references: [id])
+}
+
+
+model Dismissal {
+    id          String   @id @default(cuid())
+    motive      String
+    description String?
+    startDate   DateTime?
+    endDate     DateTime?
+    dateOfIssuance DateTime
+    documentId String   @unique // Garante que cada documento seja usado apenas uma vez
+    document    Document @relation(fields: [documentId], references: [id])
+    createdAt   DateTime @default(now())
+}
+
+
+
+model Absence {
+    id          String   @id @default(cuid())
+    type        String
+    description String?
+    date        DateTime
+    employeeId  String
+    createdAt   DateTime @default(now())
+    employee    Employee @relation(fields: [employeeId], references: [id])
+}
+
+model VacationSchedule {
+    id          String   @id @default(cuid())
+    month       String
+    year        String
+    employeeId  String
+    createdAt   DateTime @default(now())
+    employee    Employee @relation(fields: [employeeId], references: [id])
+}
