@@ -4,7 +4,6 @@ import { UserSchema } from '../schema/user'
 import { z } from 'zod'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
-
 // Esquema de validação
 interface Params {
 	id: string
@@ -20,12 +19,14 @@ export const getAll = async (req: Request, res: Response) => {
 
 export const Create = async (req: Request, res: Response) => {
 	try {
+	  // 	
 	  const { name, email } = UserSchema.parse(req.body);
-  
 	  const result = await prisma.user.create({
-		data: { name, email },
+	  	data: { name, email },
 	  });
-	  res.status(201).send(result);
+	  res.status(201).json({
+	  	  message: `Usuário Cadastrado com sucesso.` 
+	  })
 	} catch (error) {
 	  if (error instanceof z.ZodError) {
 		res.status(400).json({
@@ -33,14 +34,13 @@ export const Create = async (req: Request, res: Response) => {
 		});
 	  } else {
 		res.status(500).json({
-		  message: 'Erro interno do servidor',
+		  message: 'Erro interno do servidor!',
 		});
 	  }
 	}
 };
   
-  
-//Edita o user, mas nao retorna message: 'Atualizado com sucesso' 
+
 export const Update = async (req: Request<{}, {}, {}, Params>, res: Response) => {
 	try {
 		const { id } = req.query
@@ -49,31 +49,31 @@ export const Update = async (req: Request<{}, {}, {}, Params>, res: Response) =>
 			data,
 			where: { id },
 		})
-		res.status(204).json({ message: 'Atualizado com sucesso.' })
+		res.status(201).json({ message: 'Usuário Atualizado com sucesso!' })
 	} catch (error) {
 		if (error instanceof z.ZodError) {
 			res.status(400).json({
 				message: error.errors[0].message,
 			})
 		} else if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-			res.status(404).json({ message: 'Usuário inexistente' })
+			res.status(404).json({ message: 'Usuário inexistente!' })
 		} else {
 			res.status(500).json({ message: 'Erro: ' + error })
 		}
 	}
 }
 
-//Excluir o user, mas nao retorna message: 'Eliminado com sucesso' 
+
 export const Delete = async (req: Request<{}, {}, {}, Params>, res: Response) => {
 	try {
 		const { id } = req.query
 		await prisma.user.delete({
 			where: { id: id },
 		})
-		res.status(204).json({ message: 'Eliminado com sucesso' })
+		res.status(201).json({ message: 'Eliminado com sucesso!' })
 	} catch (error) {
 		if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-			res.status(404).json({ message: 'Usuário inexistente' })
+			res.status(404).json({ message: 'Usuário inexistente!' })
 		} else {
 			res.status(500).json({ message: 'Erro:' + error })
 		}
