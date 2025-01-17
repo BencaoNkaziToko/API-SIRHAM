@@ -4,6 +4,8 @@ import { UserSchema } from '../schema/user'
 import { z } from 'zod'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
+
+// Esquema de validação
 interface Params {
 	id: string
 }
@@ -16,33 +18,19 @@ export const getAll = async (req: Request, res: Response) => {
 }
 
 
-// Encontrei um erro depois de cadastar, a message de erro, está assim:
-/*{
-	"message": "Required"
-}*/
-// A mensagem de erro deveria ser: "O nome é obrigatório"
-// ou "O e-mail deve ser válido"
-
-
-
 export const Create = async (req: Request, res: Response) => {
 	try {
-	  
-	  const { name } = UserSchema.parse(req.body);
-	  const { email } = req.body;
-	  // Criar o usuário no banco de dados
-	  const result = await prisma.user.create({
-		data: {
-		  name,
-		  email,
-		},
-	  });
+	  const { name, email } = UserSchema.parse(req.body); // Validação
   
+	  const result = await prisma.user.create({
+		data: { name, email },
+	  });
+
 	  res.status(201).send(result);
 	} catch (error) {
 	  if (error instanceof z.ZodError) {
-		res.status(400).json({	
-		  message: error.errors[0].message, // Retorna o primeiro erro
+		res.status(400).json({
+		  message: error.errors[0].message,
 		});
 	  } else {
 		res.status(500).json({
@@ -50,7 +38,8 @@ export const Create = async (req: Request, res: Response) => {
 		});
 	  }
 	}
-}
+};
+  
   
 //Edita o user, mas nao retorna message: 'Atualizado com sucesso' 
 export const Update = async (req: Request<{}, {}, {}, Params>, res: Response) => {
