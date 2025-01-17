@@ -20,12 +20,11 @@ export const getAll = async (req: Request, res: Response) => {
 
 export const Create = async (req: Request, res: Response) => {
 	try {
-	  const { name, email } = UserSchema.parse(req.body); // Validação
+	  const { name, email } = UserSchema.parse(req.body);
   
 	  const result = await prisma.user.create({
 		data: { name, email },
 	  });
-
 	  res.status(201).send(result);
 	} catch (error) {
 	  if (error instanceof z.ZodError) {
