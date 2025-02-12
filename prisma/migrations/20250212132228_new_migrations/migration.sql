@@ -61,6 +61,20 @@ CREATE TABLE "Document" (
 );
 
 -- CreateTable
+CREATE TABLE "Dismissal" (
+    "id" TEXT NOT NULL,
+    "motive" TEXT NOT NULL,
+    "description" TEXT,
+    "startDate" TIMESTAMP(3),
+    "endDate" TIMESTAMP(3),
+    "dateOfIssuance" TIMESTAMP(3) NOT NULL,
+    "documentId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Dismissal_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Absence" (
     "id" TEXT NOT NULL,
     "type" TEXT NOT NULL,
@@ -89,6 +103,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "Employee_agentNumber_key" ON "Employee"("agentNumber");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Dismissal_documentId_key" ON "Dismissal"("documentId");
+
 -- AddForeignKey
 ALTER TABLE "Employee" ADD CONSTRAINT "Employee_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -97,6 +114,9 @@ ALTER TABLE "Employee" ADD CONSTRAINT "Employee_workDepartmentId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "Document" ADD CONSTRAINT "Document_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Dismissal" ADD CONSTRAINT "Dismissal_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Absence" ADD CONSTRAINT "Absence_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

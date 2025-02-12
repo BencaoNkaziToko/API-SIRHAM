@@ -1,12 +1,12 @@
 services:
   db:
     image: postgres:latest
-    container_name: db
+    container_name: rhAPI
     restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: teste
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: db
     ports:
       - '5432:5432' # Mapeia a porta padrão do PostgreSQL para a máquina host
     volumes:
