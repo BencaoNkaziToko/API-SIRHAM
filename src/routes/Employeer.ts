@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import {getAll, getCategoryByID, Create, Update, Delete} from '../controllers/Category'
+import {getAll, getEmployeerByID, Create, Update, Delete} from '../controllers/Employeer'
 
 const router = Router()
 
 router.get('/', getAll)
-router.get('/:id', getCategoryByID)
+router.get('/:id', getEmployeerByID)
 router.post('/', Create)
 router.delete('/', Delete)
 router.put('/', Update)

@@ -1,28 +1,31 @@
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { CategorySchema  } from '../schema/category'
+import { DocumentSchema  } from '../schema/document'
 import { z } from 'zod'
 const prisma = new PrismaClient()
 
 interface Params {
-	id: string
+    id: string
 }
 
+interface IEmployeerID{
+    id?: '' | string 
+}
 
 export const getAll = async (req: Request, res: Response) => {
-    const categories = await prisma.category.findMany()
-    res.status(200).json(categories)
+    const document = await prisma.document.findMany()
+    res.status(200).json(document)
 }
 
 
-export const getCategoryByID = async (req: Request, res: Response) => {
+export const getDocumentByID = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const category = await prisma.category.findUnique({ 
+    const document = await prisma.document.findUnique({ 
       where: { id }
     })
-    res.status(200).json(category)
+    res.status(200).json(document)
   } catch (error) {
       res.status(500).json({ message: 'Erro: ' + error })
   }
@@ -30,13 +33,12 @@ export const getCategoryByID = async (req: Request, res: Response) => {
 
 export const Create = async (req: Request, res: Response) => {
     try {
-      // 	
-      const { name, netSalary, grossSalary } = CategorySchema.parse(req.body);
-      const result = await prisma.category.create({
-        data: { name, netSalary, grossSalary },
+      const { title, dateOfIssuance, path, employeeId } = req.body;
+      const result = await prisma.document.create({
+        data: { title, dateOfIssuance, path, employeeId },
       });
       res.status(201).json({
-          message: `Categoria Cadastrada com sucesso.` 
+          message: `Documento cadastrado com sucesso.` 
       })
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -58,19 +60,19 @@ export const Create = async (req: Request, res: Response) => {
 export const Update = async (req: Request<{}, {}, {}, Params>, res: Response) => {
   try {
     const { id } = req.query
-    const data = CategorySchema.partial().parse(req.body)
-    await prisma.category.update({
+    const data = DocumentSchema.partial().parse(req.body)
+    await prisma.document.update({
       data,
       where: { id },
     })
-    res.status(201).json({ message: 'Categoria Atualizada com sucesso!' })
+    res.status(201).json({ message: 'Documento Atualizado com sucesso!' })
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({
         message: error.errors[0].message,
       })
     } else if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-      res.status(404).json({ message: 'Categoria inexistente!' })
+      res.status(404).json({ message: 'Documento inexistente!' })
     } else {
       res.status(500).json({ message: 'Erro: ' + error })
     }
@@ -93,3 +95,7 @@ export const Delete = async (req: Request<{}, {}, {}, Params>, res: Response) =>
     }
   }
 }
+
+
+
+
